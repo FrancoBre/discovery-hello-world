@@ -22,20 +22,25 @@ import org.ungs.utils.FullyQualifiedNameFinder;
  */
 public class Main {
 
-    public static void extractClassesFromJar(String jarFilePath) throws IOException {
+    /**
+     * @param jarFilePath path of the jar file
+     * @return path of the extracted classes
+     * @throws IOException if the jar file does not exist
+     */
+    public static String extractClassesFromJar(String jarFilePath) throws IOException {
+        // Create a directory for extracted classes in the same location as the JAR file
+        File outputDir = new File("src/main/java/org/ungs/complexest/interfaces");
+        if (!outputDir.exists()) {
+            outputDir.mkdir();
+        }
+
         try {
             File jarFile = new File(jarFilePath);
 
             // Check if the JAR file exists
             if (!jarFile.exists() || !jarFile.isFile()) {
                 System.err.println("Jar file does not exist.");
-                return;
-            }
-
-            // Create a directory for extracted classes in the same location as the JAR file
-            File outputDir = new File(jarFile.getParent(), "extracted_classes");
-            if (!outputDir.exists()) {
-                outputDir.mkdir();
+                return "";
             }
 
             // Open the JAR file
@@ -50,12 +55,6 @@ public class Main {
                 if (entry.getName().endsWith(".class")) {
                     // Create a file for the extracted class in the output directory
                     File outputFile = new File(outputDir, entry.getName());
-
-                    // Ensure the parent directories exist
-                    File parentDir = outputFile.getParentFile();
-                    if (!parentDir.exists()) {
-                        parentDir.mkdirs();
-                    }
 
                     // Extract the class file content
                     InputStream inputStream = jar.getInputStream(entry);
@@ -75,11 +74,11 @@ public class Main {
 
             // Close the JAR file
             jar.close();
-
-            System.out.println("Classes extracted to: " + outputDir.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return outputDir.getPath();
     }
 
     public static Set<Example> findClasses(String path)
@@ -115,8 +114,10 @@ public class Main {
 
     public static void main(String[] args)
         throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
-        //extractClassesFromJar("src/test/resources/example-ext.jar");
-        Set<Example> classes = findClasses("src/test/resources/extracted_classes");
+        System.out.println("la concha de tu putisima madre");
+        extractClassesFromJar("src/test/resources/example-ext.jar");
+
+        Set<Example> classes = findClasses("src/main/java/org/ungs/complexest/interfaces");
 
         for (Example cls : classes) {
             cls.sayHello();
